@@ -3,6 +3,7 @@ import { ITask } from '@src/task/task.interface';
 import { Task } from '@src/task/task.entity';
 import { CreateTaskDto } from '@src/task/dto/create-task.dto';
 import { UpdateTaskDto } from '@src/task/dto/update-task.dto';
+import { NotFoundTaskException } from '@src/task/exceptions/not-found-exception.exception';
 
 @Injectable()
 export class TaskService {
@@ -13,7 +14,11 @@ export class TaskService {
   }
 
   getTaskById(id: string): ITask {
-    return this.tasks.find((t) => t.id === +id);
+    const task = this.tasks.find((t) => t.id === +id);
+    if (!task) {
+      throw new NotFoundTaskException();
+    }
+    return task;
   }
 
   createTask({ task, tags, status }: CreateTaskDto): ITask {
