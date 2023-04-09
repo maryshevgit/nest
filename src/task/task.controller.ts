@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   UsePipes,
@@ -13,34 +14,40 @@ import { ITask } from '@src/task/task.interface';
 import { TaskService } from '@src/task/task.service';
 import { CreateTaskDto } from '@src/task/dto/create-task.dto';
 import { UpdateTaskDto } from '@src/task/dto/update-task.dto';
+import { EmailPipe } from '@src/task/pipes/email.pipe';
 
 @Controller('task')
 export class TaskController {
-  constructor(private testService: TaskService) {}
+  constructor(private taskService: TaskService) {}
 
   @Get()
   getTasks(): ITask[] {
-    return this.testService.getTasks();
+    return this.taskService.getTasks();
   }
 
   @Get(':id')
-  getTaskById(@Param('id') id: string): ITask {
-    return this.testService.getTaskById(id);
+  getTaskById(@Param('id', ParseIntPipe) id: number): ITask {
+    return this.taskService.getTaskById(id);
   }
 
   @UsePipes(new ValidationPipe())
   @Post()
   createTask(@Body() task: CreateTaskDto): ITask {
-    return this.testService.createTask(task);
+    return this.taskService.createTask(task);
   }
 
   @Put(':id')
-  updateTask(@Param('id') id: string, @Body() task: UpdateTaskDto): ITask[] {
-    return this.testService.updateTask(id, task);
+  updateTask(@Param('id') id: number, @Body() task: UpdateTaskDto): ITask[] {
+    return this.taskService.updateTask(id, task);
   }
 
   @Delete(':id')
-  deleteTask(@Param('id') id: string) {
-    return this.testService.deleteTask(id);
+  deleteTask(@Param('id') id: number) {
+    return this.taskService.deleteTask(id);
+  }
+
+  @Get('email/:email')
+  getTasksByEmail(@Param('email', EmailPipe) email: string): ITask[] {
+    return this.taskService.getTasksByEmail(email);
   }
 }
